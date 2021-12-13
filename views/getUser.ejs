@@ -1,0 +1,113 @@
+<link rel="stylesheet" href="../assets/css/bootstrap.min.css">
+<body style="background-image: linear-gradient(to bottom, #705bd0, #49abc4, #4193b5, #033150, #055705);min-height:100vh;"></body>
+
+<div class="container">
+  <div style="height: 100px; display: none;" class="mt-3 erscdiv d-flex justify-content-center align-items-center alert alert-box ">
+  <h1 class="ersc"></h1></div>
+  <table class="table table-dark">
+    <thead>
+      <tr>
+        <th scope="col">Id</th>
+        <th scope="col">Ad</th>
+        <th scope="col">Soyad</th>
+        <th scope="col">Telefon</th>
+        <th scope="col">Başlanğıc Tarixi</th>
+        <th scope="col">Son Ödeniş Tarixi</th>
+        <th scope="col">Son Ödeniş Miqdarı</th>
+        <th scope="col">Qalıq Borc</th>
+        <th scope="col">Əlavə Olunma Tarixi</th>
+        <th scope="col">Qeyd</th>
+      </tr>
+    </thead>
+    <tbody>
+      
+    </tbody>
+  </table>
+</div>
+</body>
+
+
+<script>
+     const {ipcRenderer} = require("electron")
+    ipcRenderer.on('key:youruser',(err,dt)=>{
+
+        const tbody = document.querySelector('tbody')
+        for(let c of dt){
+            const tr = document.createElement('tr')
+            tr.innerHTML = `
+                <th scope="row">${c.id}</th>
+                <td>${c.Ad}</td>
+                <td>${c.Soyad}</td>
+                <td>${c.Telefon}</td>
+                <td>${c.BaslangicTarixi}</td>
+                <td>${c.SonOdenisTarixi}</td>
+                <td>${c.SonOdenisMiqdari}</td>
+                <td>${c.Borc}</td>
+                <td>${c.Qeyd}</td>
+                <td>${c.ElaveOlunmaTarixi}</td>
+                <td><button id=${c.id} onclick="editUser([${c.id},'${c.Ad}','${c.Soyad}','${c.Borc}','${c.Telefon}','${c.BaslangicTarixi}','${c.SonOdenisMiqdari}','${c.SonOdenisTarixi}','${c.Qeyd}'])"  class="btn-edit btn  btn-secondary">Düzəliş Et</button></td>
+                <td><button id=${c.id} onclick="pay([${c.id},'${c.Ad}','${c.Soyad}','${c.Borc}','${c.Telefon}'])" class="btn-edit btn  btn-success">Ödə</button></td>
+                <td><button id=${c.id} onclick="deleteUser([${c.id},'${c.Ad}','${c.Soyad}','${c.Borc}','${c.Telefon}'])" class="btn-delete btn  btn-danger">Sil</button></td>
+            `
+            tbody.append(tr)
+
+  
+    }
+  })
+    ipcRenderer.on('key:changeCreditMssg',(err,data)=>{
+          console.log(data)
+          const ersc = document.querySelector('.erscdiv')
+          const ersc2 = document.querySelector('.ersc')
+            ersc.style.display ="block"
+             ersc.classList.add('alert-success')
+             ersc2.innerText = data
+      })
+  
+ 
+ 
+  function editUser(info){
+          
+          const id = info[0]
+          const Ad = info[1]
+          const Soyad = info[2]
+          const Borc = info[3]
+          const Telefon = info[4]
+          const BaslangicTarixi = info[5]
+          const SonOdenisMiqdari = info[6]
+          const SonOdenisTarixi = info[7]
+          const Qeyd = info[8]
+          const data = {
+            window:"getUser",
+            id,Ad,Soyad,Telefon,Borc,BaslangicTarixi,SonOdenisMiqdari,SonOdenisTarixi,Qeyd
+          }
+         ipcRenderer.send('key:editUser',data)
+      
+      }
+      function pay(info){
+        const id = info[0]
+          const Ad = info[1]
+          const Soyad = info[2]
+          const Borc = info[3]
+          const Telefon = info[4]
+          const data = {
+            window:"getUser",
+            id,Ad,Soyad,Telefon,Borc
+          }
+         ipcRenderer.send('key:payCredit',data)
+      }
+      
+        function   deleteUser(info){
+          const id = info[0]
+          const Ad = info[1]
+          const Soyad = info[2]
+          const Borc = info[3]
+          const Telefon = info[4]
+          const data = {
+            window:"getUser",
+            id,Ad,Soyad,Telefon,Borc
+          }
+         ipcRenderer.send('key:deleteUser',data)
+            
+        }
+        
+</script>

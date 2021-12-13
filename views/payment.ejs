@@ -1,0 +1,56 @@
+<link rel="stylesheet" href="../assets/css/bootstrap.min.css">
+<body style="background-image: linear-gradient(to bottom, #5bc4d0, #49abc4, #4193b5, #407aa2, #41628c);min-height:100vh;"></body>
+
+<div class="d-flex justify-content-center col-12">
+    <div class="ersc alert alert-success col-10 text-center" style="display: none;"></div>
+
+    </div>
+    <div class="d-flex justify-content-center col-12 align-items-center">
+        <div class="col-10">
+            <input type="text" disabled  placeholder="Id"        id="idt"   class=" col-10 form-control">
+            <input type="text" disabled  placeholder="Ad"        id="name"  class=" col-10 form-control">
+            <input type="text" disabled  placeholder="Soyad"     id="surname" class=" col-10 form-control">
+            <input type="text"  placeholder="Ödənəcək Miqdar"   id="payment" class=" col-10 form-control">
+            <input type="text" disabled  placeholder="Telefon"   id="phone" class=" col-10 form-control">
+            <input type="text" disabled  placeholder="Borc"   id="credit" class=" col-10 form-control">
+            <button class="btn pay-payment-btn btn-success">Ödə</button>
+
+        </div>
+        <!-- ad soyad telefon borc -->
+    </div>
+    <script>
+            const {ipcRenderer} = require("electron")
+            const payment_btn = document.querySelector('.pay-payment-btn')
+            const id_val = document.querySelector('#idt')
+            const name = document.querySelector('#name')
+            const surname = document.querySelector('#surname')
+            const phone = document.querySelector('#phone')
+            const credit = document.querySelector('#credit')
+            // const data = {
+            //         id,name,surname,credit,phone
+            // }
+            let unrecap_data ={}
+            ipcRenderer.on('key:paymentData',(err,data)=>{
+                unrecap_data = data
+                const {id,Ad,Soyad,Telefon,Borc} =data
+                console.log(id,Ad,Soyad,Telefon,Borc)
+
+                id_val.value = id
+                name.value = Ad
+                name.disabled = true
+                surname.value = Soyad
+                surname.disabled =true
+                phone.value = Telefon
+                phone.disabled = true
+                credit.value = Borc
+                credit.disabled = true
+            })
+            payment_btn.addEventListener('click',()=>{
+                const payment = document.querySelector('#payment').value
+                unrecap_data['payment'] = payment
+                unrecap_data["window"] = "main"
+                ipcRenderer.send('key:changeCredit',unrecap_data)
+                
+            })
+    </script>
+</body>

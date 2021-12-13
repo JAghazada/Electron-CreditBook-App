@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
+    <title>Credit Book</title>
+    <style>
+      th,td {
+      	border: 1px rgb(226, 89, 89) solid;
+        text-align: center;
+}
+
+    </style>
+</head>
+<body style="background-image: linear-gradient(to bottom, #5bc4d0, #49abc4, #4193b5, #407aa2, #41628c);min-height:100vh;">
+  <h1></h1>
+  <div class="mt-2 container p-0 ">
+      <div class="d-flex justify-content-end "><div class="btn btn-warning " id="add">Əlavə et</div></div>
+    
+    <div
+      class="ersc alert alert-success col-12 text-center "
+      style="display: none"
+    ></div>
+    <!-- inputun divi -->
+    <div class="  mt-5 row   mx-0">
+      <input 
+        type="text"
+        class="search-input  col-10 "
+        placeholder="Axtar"
+      />
+      <select class="  select col-1">
+          <option selected>Seç</option>
+          <option value="Id">Id</option>
+          <option value="Ad">Ad</option>
+          <option value="Soyad">Soyad</option>
+          <option value="Telefon">Telefon</option>
+          <option value="SonOdenisTarixi">Son Ödəniş Miqdarı</option>
+          <option value="SonOdenisMiqdarı">Son Ödəniş Tarixi</option>
+          <option value="BaslangicTarixi">Başlanğıc Tarixi</option>
+          <option value="Qeyd">Xüsusi Qeyd</option>
+          <option value="ElaveOlunmaTarixi">Əlavə Olunma Tarixi</option>
+        </select>
+      <button class="btn btn-warning search-button col-1">Axtar</button>
+    </div>
+      <!-- inputun divi -->
+    <table class="table table-dark  my-3">
+      <thead>
+        <tr>
+          <th scope="col">Id</th>
+          <th scope="col">Ad</th>
+          <th scope="col">Soyad</th>
+          <th scope="col">Telefon</th>
+          <th scope="col">Başlanğıc Tarixi</th>
+          <th scope="col">Son Ödeniş Tarixi</th>
+          <th scope="col">Son Ödeniş Miqdarı</th>
+          <th scope="col">Qalıq Borc</th>
+          <th scope="col">Əlavə Olunma Tarixi</th>
+          <th scope="col">Qeyd</th>
+          <th scope="col">Düzəliş Et</th>
+          <th scope="col">Ödə</th>
+          <th scope="col">Sil</th>
+        </tr>
+      </thead>
+      <tbody>
+        
+      </tbody>
+    </table>
+  </div>
+ 
+  <script>
+      const {ipcRenderer} = require("electron")
+      const main = "main"
+
+      ipcRenderer.on('key:changeCreditMssg',(err,data)=>{
+          console.log(data)
+          const ersc = document.querySelector('.ersc')
+            ersc.style.display ="block"
+             ersc.classList.add('alert-success')
+             ersc.innerText = data
+             setTimeout(()=>{
+               ersc.style.display = "none"
+             },3000)
+      })
+      let addBtn = document.querySelector('#add')
+      addBtn.addEventListener('click',()=>{
+        ipcRenderer.send('key:addWindow')
+      })
+      ipcRenderer.on('key:users',(err,dt)=>{
+        const tbody = document.querySelector('tbody')
+        for(let c of dt){
+            const tr = document.createElement('tr')
+            tr.innerHTML = `
+                <th scope="row">${c.id}</th>
+                <td>${c.Ad}</td>
+                <td>${c.Soyad}</td>
+                <td>${c.Telefon}</td>
+                <td>${c.BaslangicTarixi}</td>
+                <td>${c.SonOdenisTarixi}</td>
+                <td>${c.SonOdenisMiqdari}</td>
+                <td>${c.Borc}</td>
+                <td>${c.ElaveOlunmaTarixi}</td>
+                <td>${c.Qeyd}</td>
+                <td><button id=${c.id} onclick="editUser([${c.id},'${c.Ad}','${c.Soyad}','${c.Borc}','${c.Telefon}','${c.BaslangicTarixi}','${c.SonOdenisMiqdari}','${c.SonOdenisTarixi}','${c.Qeyd}'])"  class="btn-edit btn  btn-secondary">Düzəliş Et</button></td>
+                <td><button id=${c.id} onclick="pay([${c.id},'${c.Ad}','${c.Soyad}','${c.Borc}','${c.Telefon}'])" class="btn-edit btn  btn-success">Ödə</button></td>
+                <td><button id=${c.id} onclick="deleteUser([${c.id},'${c.Ad}','${c.Soyad}','${c.Borc}','${c.Telefon}'])" class="btn-delete btn  btn-danger">Sil</button></td>
+            `
+            tbody.append(tr)
+      
+        }
+        
+      })
+      function editUser(info){
+        const id = info[0]
+          const Ad = info[1]
+          const Soyad = info[2]
+          const Borc = info[3]
+          const Telefon = info[4]
+          const BaslangicTarixi = info[5]
+          const SonOdenisMiqdari = info[6]
+          const SonOdenisTarixi = info[7]
+          const Qeyd = info[8]
+          const data = {
+            window:main,
+            id,Ad,Soyad,Telefon,Borc,BaslangicTarixi,SonOdenisMiqdari,SonOdenisTarixi,Qeyd
+          }
+         ipcRenderer.send('key:editUser',data)
+      
+      }
+      function pay(info){
+        const id = info[0]
+          const Ad = info[1]
+          const Soyad = info[2]
+          const Borc = info[3]
+          const Telefon = info[4]
+          const data = {
+            window:"main",
+            id,Ad,Soyad,Telefon,Borc
+          }
+         ipcRenderer.send('key:payCredit',data)
+      }
+      
+        function   deleteUser(info){
+          const id = info[0]
+          const Ad = info[1]
+          const Soyad = info[2]
+          const Borc = info[3]
+          const Telefon = info[4]
+          const data = {
+            window:"main",
+            id,Ad,Soyad,Telefon,Borc
+          }
+         ipcRenderer.send('key:deleteUser',data)
+            
+        }
+        const ersc = document.querySelector('.ersc')
+        const search_button = document.querySelector('.search-button')
+        var value='' ;
+        const select = document.querySelector('.select')
+      select.addEventListener('change',()=>{
+        value = select.options[select.selectedIndex].value
+      })
+      search_button.addEventListener('click',()=>{
+           if(value === '' || value==='Seç'){
+            ersc.style.display ="block"
+             ersc.classList.remove('alert-success')
+             ersc.classList.add('alert-danger')
+             ersc.innerText = 'Nəyə görə axtarış edəcəynizi seçin!'
+             return
+           }else{
+            const search_input = document.querySelector('.search-input').value
+            const data = {
+              field:value,
+              value:search_input
+            }
+            ipcRenderer.send('key:getUser',data)
+           }
+
+        
+        
+
+      })
+
+  </script>
+</body>
+</html>

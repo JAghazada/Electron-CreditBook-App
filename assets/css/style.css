@@ -1,0 +1,12 @@
+.row{
+    margin-left: 0 !important;
+    margin-right: 0% !important;
+}
+input{
+    margin: 5px;
+}
+#add{
+    position: absolute !important;
+    top: 0 !important;
+    right: 0 !important;
+}

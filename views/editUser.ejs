@@ -1,0 +1,83 @@
+<link rel="stylesheet" href="../assets/css/bootstrap.min.css">
+
+<body
+    style="background-image: linear-gradient(to bottom, #5bc4d0, #49abc4, #4193b5, #407aa2, #41628c);min-height:100vh;">
+
+    <div class="d-flex justify-content-center col-12">
+        <div class="ersc alert alert-success col-10 text-center" style="display: none;"></div>
+
+    </div>
+    <div class="d-flex justify-content-center col-12 align-items-center">
+        <div class="col-10">
+            <input type="text" disabled placeholder="id" class="col-10 form-control" id="idt">
+            <input type="text" placeholder="Ad" id="name" class=" col-10 form-control">
+            <input type="text" placeholder="Soyad" id="surname" class=" col-10 form-control">
+            <input type="text" placeholder="Borc" id="credit" class=" col-10 form-control">
+            <input type="text" placeholder="Telefon" id="phone" class=" col-10 form-control">
+            <input type="text" placeholder="Başlanğıc Tarixi" id="starting_time" class=" col-10 form-control">
+            <input type="text" placeholder="Son Ödeniş Tarixi" id="last_payment_time" class=" col-10 form-control">
+            <input type="text" placeholder="Son Ödeniş Miqdarı" id="last_payment_amount" class=" col-10 form-control">
+            <input type="text" placeholder="Qeyd" id="note" class=" col-10 form-control">
+            <button class="btn edit-btn btn-secondary">Düzəliş Et</button>
+
+        </div>
+        <!-- ad soyad telefon borc -->
+    </div>
+    <script>
+        const {ipcRenderer} = require("electron")
+        //edit button
+        const edit_btn = document.querySelector('.edit-btn')
+        //values
+        const idt = document.querySelector('#idt')
+        const name = document.querySelector('#name')
+        const surname = document.querySelector('#surname')
+        const phone = document.querySelector('#phone')
+        const credit = document.querySelector('#credit')
+        const last_payment_time=document.querySelector('#last_payment_time') 
+        const last_payment_amount=document.querySelector('#last_payment_amount')
+        const note=document.querySelector('#note')
+        const starting_time=document.querySelector('#starting_time') 
+        let unrecap_data ={}
+            ipcRenderer.on('key:userDataForEdit',(err,data)=>{
+                unrecap_data = {
+                    "window":data.window
+                }
+                const { id,Ad,Soyad,Telefon,Borc,BaslangicTarixi,SonOdenisMiqdari,SonOdenisTarixi,Qeyd} = data
+                
+                idt.value = id
+                idt.disabled =true
+                name.value = Ad
+                surname.value = Soyad
+                phone.value = Telefon
+                credit.value = Borc
+                last_payment_time.value = SonOdenisTarixi
+                last_payment_amount.value = SonOdenisMiqdari
+                note.value=Qeyd
+                starting_time.value = BaslangicTarixi
+
+            })
+            edit_btn.addEventListener('click',()=>{
+                const idt = document.querySelector('#idt').value
+                const name = document.querySelector('#name').value
+                const surname = document.querySelector('#surname').value
+                const phone = document.querySelector('#phone').value
+                const credit = document.querySelector('#credit').value
+                const last_payment_time=document.querySelector('#last_payment_time').value 
+                const last_payment_amount=document.querySelector('#last_payment_amount').value
+                const note=document.querySelector('#note').value
+                const starting_time=document.querySelector('#starting_time').value 
+                unrecap_data["id"]=idt
+                unrecap_data["Ad"]=name
+                unrecap_data["Soyad"]=surname
+                unrecap_data["Telefon"]=phone
+                unrecap_data["Borc"]=credit
+                unrecap_data["SonOdenisTarixi"]=last_payment_time
+                unrecap_data["SonOdenisMiqdari"]=last_payment_amount
+                unrecap_data["Qeyd"]=note
+                unrecap_data["BaslangicTarixi"]=starting_time
+                
+                ipcRenderer.send('key:changeUserInfo',unrecap_data)
+                
+            })
+    </script>
+</body>
