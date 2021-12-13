@@ -144,11 +144,11 @@ app.on("ready",()=>{
             
         })
         ipcMain.on('key:changeCredit',async(err,data)=>{
-            const {window,id,Ad,Soyad,Telefon,Borc,payment} = data
+            const {timeZone,window,id,Ad,Soyad,Telefon,Borc,payment} = data
                 const yeni_borc = parseInt(Borc) - parseInt(payment)
                 const db = openDb()
                  db.each(`UPDATE users SET Borc=${yeni_borc} WHERE id='${id}' and Ad='${Ad}' and Soyad='${Soyad}' and Telefon='${Telefon}' and Borc='${Borc}'`)
-                 db.each (`UPDATE users SET SonOdenisTarixi=${(new Date(Date.now())).toISOString().split('T')[0]} WHERE id='${id}' and Ad='${Ad}' and Soyad='${Soyad}' and Telefon='${Telefon}' and Borc='${yeni_borc}'`)
+                 db.each (`UPDATE users SET SonOdenisTarixi=${timeZone} WHERE id='${id}' and Ad='${Ad}' and Soyad='${Soyad}' and Telefon='${Telefon}' and Borc='${yeni_borc}'`)
                 db.each(`UPDATE users SET SonOdenisMiqdari=${parseInt(payment)} WHERE id='${id}' and Ad='${Ad}' and Soyad='${Soyad}' and Telefon='${Telefon}' and Borc='${yeni_borc}'`)
 
                  closeDb(db)

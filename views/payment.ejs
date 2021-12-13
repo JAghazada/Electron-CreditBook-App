@@ -49,6 +49,7 @@
                 const payment = document.querySelector('#payment').value
                 unrecap_data['payment'] = payment
                 unrecap_data["window"] = "main"
+                unrecap_data["timeZone"]=(new Date(Date.now())).toISOString().split('T')[0]
                 ipcRenderer.send('key:changeCredit',unrecap_data)
                 
             })
